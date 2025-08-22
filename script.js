@@ -35,10 +35,11 @@ async function initializeApp() {
         userVotes = await window.LeakHubDB.getUserVotes();
         dailyChallenge = await window.LeakHubDB.getDailyChallenge();
         
-        // Initialize UI
+        // Initialize UI and production features
         updateUI();
         initializeDailyChallenge();
         startChallengeTimer();
+        initializeProductionFeatures();
         
         console.log('LeakHub initialized successfully');
     } catch (error) {
@@ -53,6 +54,7 @@ async function initializeApp() {
         updateUI();
         initializeDailyChallenge();
         startChallengeTimer();
+        initializeProductionFeatures();
     }
 }
 
@@ -1303,13 +1305,15 @@ function toggleChat() {
     const chatPanel = document.getElementById('chatPanel');
     if (chatPanel.style.display === 'none') {
         chatPanel.style.display = 'block';
-        if (!currentUser) {
-            currentUser = prompt('Enter your username for chat:');
-            if (currentUser) {
-                onlineUsers.add(currentUser);
-                updateOnlineUsers();
-                addChatMessage('system', `${currentUser} joined the chat!`);
-            }
+        if (!currentUser || currentUser === 'Guest') {
+            currentUser = prompt('Enter your username for chat:') || 'Guest';
+            localStorage.setItem('currentUser', currentUser);
+            updateUserInterface();
+        }
+        if (currentUser && currentUser !== 'Guest') {
+            onlineUsers.add(currentUser);
+            updateOnlineUsers();
+            addChatMessage('system', `${currentUser} joined the chat!`);
         }
     } else {
         chatPanel.style.display = 'none';
@@ -1408,13 +1412,25 @@ function initializeProductionFeatures() {
 }
 
 function updateUserInterface() {
-    document.getElementById('currentUserName').textContent = currentUser;
-    document.getElementById('profileName').textContent = currentUser;
-    document.getElementById('userNameInput').value = currentUser;
+    // Initialize currentUser if not set
+    if (!currentUser || currentUser === 'Guest') {
+        currentUser = localStorage.getItem('currentUser') || 'Guest';
+    }
+    
+    const currentUserNameEl = document.getElementById('currentUserName');
+    const profileNameEl = document.getElementById('profileName');
+    const userNameInputEl = document.getElementById('userNameInput');
+    const activeUsersEl = document.getElementById('activeUsers');
+    
+    if (currentUserNameEl) currentUserNameEl.textContent = currentUser;
+    if (profileNameEl) profileNameEl.textContent = currentUser;
+    if (userNameInputEl) userNameInputEl.value = currentUser;
     
     // Update active users count
-    const uniqueUsers = new Set(leakDatabase.map(sub => sub.source));
-    document.getElementById('activeUsers').textContent = uniqueUsers.size;
+    if (activeUsersEl) {
+        const uniqueUsers = new Set(leakDatabase.map(sub => sub.source));
+        activeUsersEl.textContent = uniqueUsers.size;
+    }
 }
 
 function setupNavigation() {
@@ -1738,7 +1754,4 @@ function showNotification(title, message, type = 'info') {
     }
 }
 
-// Initialize production features when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    initializeProductionFeatures();
-});
+// Production features are now initialized in initializeApp()

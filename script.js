@@ -6,6 +6,22 @@ let leakRequests = [];
 let userVotes = {};
 let dailyChallenge = null;
 
+// Dynamic Achievement System
+const achievements = {
+    firstBlood: { id: 'firstBlood', name: 'First Blood', description: 'Submit your first leak', icon: '🩸', points: 50, unlocked: false },
+    discoverer: { id: 'discoverer', name: 'Discoverer', description: 'Make your first discovery', icon: '🔍', points: 100, unlocked: false },
+    verifier: { id: 'verifier', name: 'Verifier', description: 'Verify 5 submissions', icon: '✅', points: 200, unlocked: false },
+    collector: { id: 'collector', name: 'Collector', description: 'Submit 10 different leaks', icon: '📚', points: 300, unlocked: false },
+    expert: { id: 'expert', name: 'Expert', description: 'Reach 1000 total points', icon: '👑', points: 500, unlocked: false },
+    pioneer: { id: 'pioneer', name: 'Pioneer', description: 'Discover 5 different targets', icon: '🚀', points: 400, unlocked: false },
+    analyst: { id: 'analyst', name: 'Analyst', description: 'Perform 20 comparisons', icon: '📊', points: 250, unlocked: false },
+    challenger: { id: 'challenger', name: 'Challenger', description: 'Complete 5 daily challenges', icon: '🎯', points: 350, unlocked: false },
+    community: { id: 'community', name: 'Community Hero', description: 'Submit 10 requests', icon: '🤝', points: 200, unlocked: false },
+    legend: { id: 'legend', name: 'LeakHub Legend', description: 'Unlock all achievements', icon: '🌟', points: 1000, unlocked: false }
+};
+
+let userAchievements = {};
+
 // Initialize database and UI
 async function initializeApp() {
     try {
@@ -94,7 +110,10 @@ function submitLeak(event) {
             joinDate: new Date().toISOString(),
             toolsDiscovered: 0,
             appsDiscovered: 0,
-            agentsDiscovered: 0
+            agentsDiscovered: 0,
+            comparisons: 0,
+            challengesCompleted: 0,
+            requestsSubmitted: 0
         };
     }
     
@@ -120,25 +139,28 @@ function submitLeak(event) {
         userStats[source].totalScore += 30; // Extra points for comprehensive submission
     }
     
-    await saveDatabase();
-    updateUI();
-    
-    // Clear form
-    document.getElementById('sourceName').value = '';
-    document.getElementById('targetType').value = '';
-    document.getElementById('instanceId').value = '';
-    document.getElementById('targetUrl').value = '';
-    document.getElementById('requiresLogin').checked = false;
-    document.getElementById('requiresPaid').checked = false;
-    document.getElementById('accessNotes').value = '';
-    document.getElementById('parentSystem').value = '';
-    document.getElementById('functionName').value = '';
-    document.getElementById('leakContent').value = '';
-    document.getElementById('toolPrompts').value = '';
-    document.getElementById('context').value = '';
-    document.getElementById('hasTools').checked = false;
-    document.getElementById('additionalFields').style.display = 'none';
-    document.getElementById('toolsSection').style.display = 'none';
+    saveDatabase().then(() => {
+        updateUI();
+        
+        // Clear form
+        document.getElementById('sourceName').value = '';
+        document.getElementById('targetType').value = '';
+        document.getElementById('instanceId').value = '';
+        document.getElementById('targetUrl').value = '';
+        document.getElementById('requiresLogin').checked = false;
+        document.getElementById('requiresPaid').checked = false;
+        document.getElementById('accessNotes').value = '';
+        document.getElementById('parentSystem').value = '';
+        document.getElementById('functionName').value = '';
+        document.getElementById('leakContent').value = '';
+        document.getElementById('toolPrompts').value = '';
+        document.getElementById('context').value = '';
+        document.getElementById('hasTools').checked = false;
+        document.getElementById('additionalFields').style.display = 'none';
+        document.getElementById('toolsSection').style.display = 'none';
+        
+        showAlert('Leak submitted successfully!');
+    });
     
     showAlert(submission.isFirstDiscovery ? 
         '🎉 First discovery! You found a new leak!' : 
@@ -387,8 +409,9 @@ function performComparison(subA, subB) {
             }
         }
         
-        await saveDatabase();
-        updateUI();
+        saveDatabase().then(() => {
+            updateUI();
+        });
     }
     
     // Scroll to results
@@ -632,76 +655,17 @@ function updateRankings() {
 
 function updateAchievements() {
     const achievementsList = document.getElementById('achievementsList');
-    const achievements = [];
+    const unlockedAchievements = displayAchievements(localStorage.getItem('currentUser'));
     
-    // First Discovery achievements
-    const firstDiscoverers = {};
-    leakDatabase.forEach(sub => {
-        if (sub.isFirstDiscovery) {
-            if (!firstDiscoverers[sub.instance]) {
-                firstDiscoverers[sub.instance] = sub.source;
-            }
-        }
-    });
-    
-    Object.entries(firstDiscoverers).forEach(([instance, user]) => {
-        achievements.push({
-            icon: '🎯',
-            title: `First ${instance} Leak`,
-            user: user,
-            description: `First to discover ${instance} system prompt`
-        });
-    });
-    
-    // Most Verified Leaks
-    const topVerifier = Object.entries(userStats)
-        .sort((a, b) => b[1].verifiedLeaks - a[1].verifiedLeaks)[0];
-    
-    if (topVerifier && topVerifier[1].verifiedLeaks > 0) {
-        achievements.push({
-            icon: '🔍',
-            title: 'Master Verifier',
-            user: topVerifier[0],
-            description: `${topVerifier[1].verifiedLeaks} verified leaks`
-        });
-    }
-    
-    // Most Submissions
-    const topSubmitter = Object.entries(userStats)
-        .sort((a, b) => b[1].submissions - a[1].submissions)[0];
-    
-    if (topSubmitter && topSubmitter[1].submissions > 5) {
-        achievements.push({
-            icon: '📊',
-            title: 'Prolific Hunter',
-            user: topSubmitter[0],
-            description: `${topSubmitter[1].submissions} total submissions`
-        });
-    }
-    
-    // Highest Score
-    const topScorer = Object.entries(userStats)
-        .sort((a, b) => b[1].totalScore - a[1].totalScore)[0];
-    
-    if (topScorer) {
-        achievements.push({
-            icon: '🏆',
-            title: 'Top Contributor',
-            user: topScorer[0],
-            description: `${topScorer[1].totalScore} total points`
-        });
-    }
-    
-    if (achievements.length === 0) {
+    if (unlockedAchievements.length === 0) {
         achievementsList.innerHTML = '<p style="color: #666; text-align: center;">No achievements yet!</p>';
         return;
     }
     
-    achievementsList.innerHTML = achievements.map(achievement => `
+    achievementsList.innerHTML = unlockedAchievements.map(achievement => `
         <div class="achievement-card">
             <div class="achievement-icon">${achievement.icon}</div>
-            <div class="achievement-title">${achievement.title}</div>
-            <div class="achievement-user">${achievement.user}</div>
+            <div class="achievement-title">${achievement.name}</div>
             <p style="color: #666; margin-top: 0.5rem; font-size: 0.9rem;">${achievement.description}</p>
         </div>
     `).join('');
@@ -850,15 +814,16 @@ function submitRequest(event) {
     };
     
     leakRequests.push(request);
-    await saveDatabase();
-    updateRequestsList();
-    
-    // Clear form
-    document.getElementById('requestModel').value = '';
-    document.getElementById('requestDescription').value = '';
-    document.getElementById('requestBounty').value = '';
-    
-    showAlert('Request submitted successfully!');
+    saveDatabase().then(() => {
+        updateRequestsList();
+        
+        // Clear form
+        document.getElementById('requestModel').value = '';
+        document.getElementById('requestDescription').value = '';
+        document.getElementById('requestBounty').value = '';
+        
+        showAlert('Request submitted successfully!');
+    });
 }
 
 function updateRequestsList() {
@@ -997,7 +962,431 @@ function checkDailyChallengeCompletion(submission) {
         userStats[submission.source].totalScore += dailyChallenge.reward;
         userStats[submission.source].dailyChallenges = (userStats[submission.source].dailyChallenges || 0) + 1;
         
-        await saveDatabase();
-        showAlert(`🎯 Daily Challenge Completed! +${dailyChallenge.reward} points!`);
+        saveDatabase().then(() => {
+            showAlert(`🎯 Daily Challenge Completed! +${dailyChallenge.reward} points!`);
+        });
     }
 }
+
+// Advanced AI-Powered Similarity Detection
+function advancedSimilarityAnalysis(text1, text2) {
+    const analysis = {
+        semantic: calculateSemanticSimilarity(text1, text2),
+        structural: calculateStructuralSimilarity(text1, text2),
+        pattern: detectCommonPatterns(text1, text2),
+        keyword: analyzeKeywordOverlap(text1, text2),
+        confidence: 0
+    };
+    
+    // Calculate overall confidence based on all metrics
+    analysis.confidence = (
+        analysis.semantic * 0.4 +
+        analysis.structural * 0.3 +
+        analysis.pattern * 0.2 +
+        analysis.keyword * 0.1
+    );
+    
+    return analysis;
+}
+
+function calculateSemanticSimilarity(text1, text2) {
+    // Normalize and tokenize
+    const tokens1 = text1.toLowerCase().replace(/[^\w\s]/g, ' ').split(/\s+/).filter(t => t.length > 2);
+    const tokens2 = text2.toLowerCase().replace(/[^\w\s]/g, ' ').split(/\s+/).filter(t => t.length > 2);
+    
+    // Calculate Jaccard similarity
+    const set1 = new Set(tokens1);
+    const set2 = new Set(tokens2);
+    const intersection = new Set([...set1].filter(x => set2.has(x)));
+    const union = new Set([...set1, ...set2]);
+    
+    return intersection.size / union.size;
+}
+
+function calculateStructuralSimilarity(text1, text2) {
+    // Analyze sentence structure and formatting
+    const lines1 = text1.split('\n').filter(line => line.trim().length > 0);
+    const lines2 = text2.split('\n').filter(line => line.trim().length > 0);
+    
+    // Compare line count and average line length
+    const avgLength1 = lines1.reduce((sum, line) => sum + line.length, 0) / lines1.length;
+    const avgLength2 = lines2.reduce((sum, line) => sum + line.length, 0) / lines2.length;
+    
+    const lengthSimilarity = 1 - Math.abs(avgLength1 - avgLength2) / Math.max(avgLength1, avgLength2);
+    const countSimilarity = 1 - Math.abs(lines1.length - lines2.length) / Math.max(lines1.length, lines2.length);
+    
+    return (lengthSimilarity + countSimilarity) / 2;
+}
+
+function detectCommonPatterns(text1, text2) {
+    const patterns = [];
+    
+    // Detect common phrases (3+ words)
+    const words1 = text1.toLowerCase().split(/\s+/);
+    const words2 = text2.toLowerCase().split(/\s+/);
+    
+    for (let i = 0; i <= words1.length - 3; i++) {
+        for (let j = 0; j <= words2.length - 3; j++) {
+            const phrase1 = words1.slice(i, i + 3).join(' ');
+            const phrase2 = words2.slice(j, j + 3).join(' ');
+            
+            if (phrase1 === phrase2 && phrase1.length > 10) {
+                patterns.push(phrase1);
+            }
+        }
+    }
+    
+    // Calculate pattern density
+    const totalWords = Math.min(words1.length, words2.length);
+    return patterns.length / Math.max(totalWords / 10, 1);
+}
+
+function analyzeKeywordOverlap(text1, text2) {
+    // Define AI-related keywords
+    const aiKeywords = [
+        'system', 'prompt', 'assistant', 'user', 'context', 'instruction',
+        'behavior', 'response', 'format', 'output', 'input', 'model',
+        'ai', 'artificial', 'intelligence', 'language', 'processing',
+        'generate', 'analyze', 'provide', 'help', 'support', 'guide'
+    ];
+    
+    const text1Lower = text1.toLowerCase();
+    const text2Lower = text2.toLowerCase();
+    
+    let overlap = 0;
+    aiKeywords.forEach(keyword => {
+        if (text1Lower.includes(keyword) && text2Lower.includes(keyword)) {
+            overlap++;
+        }
+    });
+    
+    return overlap / aiKeywords.length;
+}
+
+// Enhanced comparison function
+function performAdvancedComparison() {
+    const submission1Id = document.getElementById('submission1').value;
+    const submission2Id = document.getElementById('submission2').value;
+    
+    if (!submission1Id || !submission2Id) {
+        showAlert('Please select two submissions to compare.');
+        return;
+    }
+    
+    const submission1 = leakDatabase.find(s => s.id === submission1Id);
+    const submission2 = leakDatabase.find(s => s.id === submission2Id);
+    
+    if (!submission1 || !submission2) {
+        showAlert('Selected submissions not found.');
+        return;
+    }
+    
+    // Perform advanced analysis
+    const advancedAnalysis = advancedSimilarityAnalysis(submission1.content, submission2.content);
+    
+    // Update comparison results
+    const resultsDiv = document.getElementById('comparisonResults');
+    resultsDiv.innerHTML = `
+        <div class="comparison-header">
+            <h3>🤖 Advanced AI Analysis Results</h3>
+            <div class="confidence-meter">
+                <div class="confidence-bar" style="width: ${advancedAnalysis.confidence * 100}%"></div>
+                <span class="confidence-text">${Math.round(advancedAnalysis.confidence * 100)}% Match</span>
+            </div>
+        </div>
+        
+        <div class="analysis-grid">
+            <div class="analysis-item">
+                <h4>🧠 Semantic Similarity</h4>
+                <div class="metric-bar">
+                    <div class="metric-fill" style="width: ${advancedAnalysis.semantic * 100}%"></div>
+                    <span>${Math.round(advancedAnalysis.semantic * 100)}%</span>
+                </div>
+                <p>Meaning and context similarity</p>
+            </div>
+            
+            <div class="analysis-item">
+                <h4>🏗️ Structural Similarity</h4>
+                <div class="metric-bar">
+                    <div class="metric-fill" style="width: ${advancedAnalysis.structural * 100}%"></div>
+                    <span>${Math.round(advancedAnalysis.structural * 100)}%</span>
+                </div>
+                <p>Format and organization similarity</p>
+            </div>
+            
+            <div class="analysis-item">
+                <h4>🔍 Pattern Detection</h4>
+                <div class="metric-bar">
+                    <div class="metric-fill" style="width: ${advancedAnalysis.pattern * 100}%"></div>
+                    <span>${Math.round(advancedAnalysis.pattern * 100)}%</span>
+                </div>
+                <p>Common phrase and pattern density</p>
+            </div>
+            
+            <div class="analysis-item">
+                <h4>🎯 Keyword Overlap</h4>
+                <div class="metric-bar">
+                    <div class="metric-fill" style="width: ${advancedAnalysis.keyword * 100}%"></div>
+                    <span>${Math.round(advancedAnalysis.keyword * 100)}%</span>
+                </div>
+                <p>AI-related terminology overlap</p>
+            </div>
+        </div>
+        
+        <div class="verification-recommendation">
+            <h4>🔍 Verification Recommendation</h4>
+            <p>${advancedAnalysis.confidence > 0.8 ? '✅ HIGH CONFIDENCE - Strong evidence of similarity' : 
+                  advancedAnalysis.confidence > 0.6 ? '⚠️ MODERATE CONFIDENCE - Some similarities detected' : 
+                  '❌ LOW CONFIDENCE - Minimal similarity detected'}</p>
+        </div>
+    `;
+    
+    // Auto-boost confidence if high similarity
+    if (advancedAnalysis.confidence > 0.7) {
+        submission1.confidence = Math.min(100, submission1.confidence + 20);
+        submission2.confidence = Math.min(100, submission2.confidence + 20);
+        saveDatabase().then(() => {
+            updateUI();
+            showAlert('High similarity detected! Confidence scores automatically boosted! 🚀');
+        });
+    }
+}
+
+// Dynamic Achievement System
+function checkAchievements(username) {
+    if (!userStats[username]) return;
+    
+    const stats = userStats[username];
+    const newAchievements = [];
+    
+    // Check each achievement
+    Object.values(achievements).forEach(achievement => {
+        if (userAchievements[username] && userAchievements[username].includes(achievement.id)) return;
+        
+        let unlocked = false;
+        
+        switch (achievement.id) {
+            case 'firstBlood':
+                unlocked = stats.submissions >= 1;
+                break;
+            case 'discoverer':
+                unlocked = stats.firstDiscoveries >= 1;
+                break;
+            case 'verifier':
+                unlocked = stats.verifiedLeaks >= 5;
+                break;
+            case 'collector':
+                unlocked = stats.submissions >= 10;
+                break;
+            case 'expert':
+                unlocked = stats.totalScore >= 1000;
+                break;
+            case 'pioneer':
+                unlocked = stats.firstDiscoveries >= 5;
+                break;
+            case 'analyst':
+                unlocked = (stats.comparisons || 0) >= 20;
+                break;
+            case 'challenger':
+                unlocked = (stats.challengesCompleted || 0) >= 5;
+                break;
+            case 'community':
+                unlocked = (stats.requestsSubmitted || 0) >= 10;
+                break;
+            case 'legend':
+                unlocked = Object.keys(achievements).every(id => 
+                    userAchievements[username] && userAchievements[username].includes(id)
+                );
+                break;
+        }
+        
+        if (unlocked) {
+            if (!userAchievements[username]) userAchievements[username] = [];
+            userAchievements[username].push(achievement.id);
+            newAchievements.push(achievement);
+            
+            // Award points
+            stats.totalScore += achievement.points;
+            
+            // Show achievement notification
+            showAchievementNotification(achievement);
+        }
+    });
+    
+    if (newAchievements.length > 0) {
+        saveDatabase();
+        updateUI();
+    }
+}
+
+function showAchievementNotification(achievement) {
+    const notification = document.createElement('div');
+    notification.className = 'achievement-notification';
+    notification.innerHTML = `
+        <div class="achievement-content">
+            <div class="achievement-icon">${achievement.icon}</div>
+            <div class="achievement-info">
+                <h4>🏆 Achievement Unlocked!</h4>
+                <h3>${achievement.name}</h3>
+                <p>${achievement.description}</p>
+                <span class="points-earned">+${achievement.points} points</span>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => notification.classList.add('show'), 100);
+    
+    // Remove after 5 seconds
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => document.body.removeChild(notification), 500);
+    }, 5000);
+}
+
+function displayAchievements(username) {
+    if (!userAchievements[username]) return [];
+    
+    return userAchievements[username].map(id => achievements[id]).filter(Boolean);
+}
+
+// Enhanced user stats tracking
+function updateUserStats(username, action, data = {}) {
+    if (!userStats[username]) {
+        userStats[username] = {
+            submissions: 0,
+            verifiedLeaks: 0,
+            firstDiscoveries: 0,
+            totalScore: 0,
+            joinDate: new Date().toISOString(),
+            toolsDiscovered: 0,
+            appsDiscovered: 0,
+            agentsDiscovered: 0,
+            comparisons: 0,
+            challengesCompleted: 0,
+            requestsSubmitted: 0
+        };
+    }
+    
+    switch (action) {
+        case 'submission':
+            userStats[username].submissions++;
+            break;
+        case 'firstDiscovery':
+            userStats[username].firstDiscoveries++;
+            break;
+        case 'verification':
+            userStats[username].verifiedLeaks++;
+            break;
+        case 'comparison':
+            userStats[username].comparisons++;
+            break;
+        case 'challengeComplete':
+            userStats[username].challengesCompleted++;
+            break;
+        case 'requestSubmitted':
+            userStats[username].requestsSubmitted++;
+            break;
+    }
+    
+    // Check for new achievements
+    checkAchievements(username);
+}
+
+// Chat System Functions
+let chatMessages = [];
+let onlineUsers = new Set();
+let currentUser = null;
+
+function toggleChat() {
+    const chatPanel = document.getElementById('chatPanel');
+    if (chatPanel.style.display === 'none') {
+        chatPanel.style.display = 'block';
+        if (!currentUser) {
+            currentUser = prompt('Enter your username for chat:');
+            if (currentUser) {
+                onlineUsers.add(currentUser);
+                updateOnlineUsers();
+                addChatMessage('system', `${currentUser} joined the chat!`);
+            }
+        }
+    } else {
+        chatPanel.style.display = 'none';
+    }
+}
+
+function sendChatMessage() {
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    
+    if (message && currentUser) {
+        addChatMessage('user', message, currentUser);
+        input.value = '';
+        
+        // Simulate responses for demo
+        setTimeout(() => {
+            const responses = [
+                'Interesting discovery! 🔍',
+                'I\'ll help verify that! ✅',
+                'Great find! 🚀',
+                'Let me check the similarity...',
+                'This looks promising! 💡'
+            ];
+            const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+            addChatMessage('bot', randomResponse, 'LeakHub Bot');
+        }, 1000 + Math.random() * 2000);
+    }
+}
+
+function addChatMessage(type, message, username = 'System') {
+    const messagesDiv = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `chat-message ${type}-message`;
+    
+    const timestamp = new Date().toLocaleTimeString();
+    messageDiv.innerHTML = `
+        <div class="message-header">
+            <span class="username">${username}</span>
+            <span class="timestamp">${timestamp}</span>
+        </div>
+        <div class="message-content">${message}</div>
+    `;
+    
+    messagesDiv.appendChild(messageDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    
+    // Keep only last 50 messages
+    if (messagesDiv.children.length > 50) {
+        messagesDiv.removeChild(messagesDiv.firstChild);
+    }
+}
+
+function updateOnlineUsers() {
+    const usersDiv = document.getElementById('chatUsers');
+    const countSpan = document.getElementById('onlineCount');
+    
+    countSpan.textContent = onlineUsers.size;
+    
+    const usersList = Array.from(onlineUsers).map(user => 
+        `<div class="online-user">🟢 ${user}</div>`
+    ).join('');
+    
+    usersDiv.innerHTML = `
+        <div class="online-indicator">🟢 Online: <span id="onlineCount">${onlineUsers.size}</span></div>
+        <div class="users-list">${usersList}</div>
+    `;
+}
+
+// Initialize chat
+document.addEventListener('DOMContentLoaded', () => {
+    const chatInput = document.getElementById('chatInput');
+    if (chatInput) {
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendChatMessage();
+            }
+        });
+    }
+});

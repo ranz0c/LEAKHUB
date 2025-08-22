@@ -34,6 +34,27 @@
                 <button onclick="toggleRequests()" style="background: linear-gradient(135deg, #ff6b6b, #ffd700); padding: 0.6rem 2rem;">
                     🎯 Requests & Challenges
                 </button>
+                <button onclick="toggleChat()" style="background: linear-gradient(135deg, #00ffff, #ff00ff); padding: 0.6rem 2rem;">
+                    💬 Live Chat
+                </button>
+            </div>
+            
+            <!-- Real-time Chat System -->
+            <div id="chatPanel" class="chat-panel" style="display: none;">
+                <div class="chat-header">
+                    <h3>💬 LeakHub Live Chat</h3>
+                    <button onclick="toggleChat()" class="close-btn">×</button>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="system-message">Welcome to LeakHub Live Chat! Share discoveries, ask questions, and collaborate in real-time! 🚀</div>
+                </div>
+                <div class="chat-input-container">
+                    <input type="text" id="chatInput" placeholder="Type your message..." maxlength="500">
+                    <button onclick="sendChatMessage()" class="send-btn">Send</button>
+                </div>
+                <div class="chat-users" id="chatUsers">
+                    <div class="online-indicator">🟢 Online: <span id="onlineCount">1</span></div>
+                </div>
             </div>
         </header>
 
@@ -136,28 +157,34 @@
 
                 <div class="results-panel">
                     <h3 style="color: #00ff88; margin-bottom: 1.5rem;">Analysis Results</h3>
-                    <div class="match-metrics">
-                        <div class="metric-card">
-                            <div class="metric-label">Character Match</div>
-                            <div class="metric-value" id="charMatch">-</div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="metric-label">Word Match</div>
-                            <div class="metric-value" id="wordMatch">-</div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="metric-label">Structure Match</div>
-                            <div class="metric-value" id="structureMatch">-</div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="metric-label">Core Similarity</div>
-                            <div class="metric-value" id="coreSimilarity">-</div>
-                        </div>
+                    <div class="comparison-controls">
+                        <button onclick="performComparison()" class="enhanced-btn">🔍 Basic Comparison</button>
+                        <button onclick="performAdvancedComparison()" class="enhanced-btn">🤖 AI Analysis</button>
                     </div>
+                    <div id="comparisonResults">
+                        <div class="match-metrics">
+                            <div class="metric-card">
+                                <div class="metric-label">Character Match</div>
+                                <div class="metric-value" id="charMatch">-</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Word Match</div>
+                                <div class="metric-value" id="wordMatch">-</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Structure Match</div>
+                                <div class="metric-value" id="structureMatch">-</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Core Similarity</div>
+                                <div class="metric-value" id="coreSimilarity">-</div>
+                            </div>
+                        </div>
 
-                    <div class="consensus-viewer">
-                        <h3>Consensus View (Common Elements)</h3>
-                        <div class="consensus-text" id="consensusText"></div>
+                        <div class="consensus-viewer">
+                            <h3>Consensus View (Common Elements)</h3>
+                            <div class="consensus-text" id="consensusText"></div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -1,0 +1,39 @@
+{
+  "name": "leakhub",
+  "version": "1.0.0",
+  "description": "AI System Prompt Discovery Platform - Community hub for crowd-sourced system prompt leak verification",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .js,.html",
+    "format": "prettier --write .",
+    "serve": "python3 -m http.server 8000"
+  },
+  "keywords": [
+    "ai",
+    "system-prompt",
+    "transparency",
+    "crowdsourcing",
+    "verification",
+    "community",
+    "github-pages"
+  ],
+  "author": "Elder Plinius",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^4.4.9",
+    "eslint": "^8.48.0",
+    "prettier": "^3.0.3"
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/elder-plinius/LEAKHUB.git"
+  },
+  "homepage": "https://elder-plinius.github.io/LEAKHUB",
+  "bugs": {
+    "url": "https://github.com/elder-plinius/LEAKHUB/issues"
+  }
+}

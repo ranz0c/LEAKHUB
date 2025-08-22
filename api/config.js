@@ -41,7 +41,7 @@ const config = {
 
     // Security settings
     security: {
-        jwtSecret: process.env.JWT_SECRET || 'your-secret-key-change-this',
+        jwtSecret: process.env.JWT_SECRET || (process.env.NODE_ENV === 'production' ? null : 'dev-secret-key'),
         bcryptRounds: 12,
         sessionTimeout: 24 * 60 * 60 * 1000 // 24 hours
     },

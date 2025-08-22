@@ -1394,6 +1394,37 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Security utility functions
+function sanitizeHTML(text) {
+    if (typeof text !== 'string') return '';
+    
+    // Create a temporary div to escape HTML
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function safeInnerHTML(element, content) {
+    if (!element) return;
+    
+    // For simple text content, use textContent instead
+    if (typeof content === 'string' && !content.includes('<')) {
+        element.textContent = content;
+        return;
+    }
+    
+    // For HTML content, sanitize user inputs
+    if (typeof content === 'string') {
+        // This is a simplified sanitizer - in production, use a library like DOMPurify
+        const sanitized = content
+            .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+            .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+            .replace(/javascript:/gi, '')
+            .replace(/on\w+\s*=/gi, '');
+        element.innerHTML = sanitized;
+    }
+}
+
 // Production-Ready Features
 let userPreferences = JSON.parse(localStorage.getItem('userPreferences') || '{}');
 

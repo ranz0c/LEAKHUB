@@ -255,66 +255,43 @@
         </div>
 
         <div class="comparison-section">
-            <h2 style="color: #00ff88; margin-bottom: 1.5rem;">🔍 Compare Multiple Instances</h2>
-            
-            <div class="comparison-controls">
-                <div class="instance-selector">
-                    <label style="color: #888; font-size: 0.9rem;">Instance A:</label>
-                    <select id="instanceA" class="form-control" style="width: 100%; padding: 0.5rem; margin-top: 0.5rem; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #e0e0e0;">
-                        <option value="">Select submission...</option>
+            <div class="panel">
+                <h2>🔍 Compare Multiple Instances</h2>
+                <div class="comparison-controls">
+                    <select id="submission1" style="width: 100%; padding: 0.5rem; margin-bottom: 1rem; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #e0e0e0;">
+                        <option value="">Select first submission...</option>
+                    </select>
+                    <select id="submission2" style="width: 100%; padding: 0.5rem; margin-bottom: 1rem; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #e0e0e0;">
+                        <option value="">Select second submission...</option>
                     </select>
                 </div>
-                <div class="instance-selector">
-                    <label style="color: #888; font-size: 0.9rem;">Instance B:</label>
-                    <select id="instanceB" class="form-control" style="width: 100%; padding: 0.5rem; margin-top: 0.5rem; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #e0e0e0;">
-                        <option value="">Select submission...</option>
-                    </select>
+                <div class="comparison-controls">
+                    <button onclick="performComparison()" class="enhanced-btn">🔍 Basic Comparison</button>
+                    <button onclick="performAdvancedComparison()" class="enhanced-btn">🤖 AI Analysis</button>
                 </div>
-                <button onclick="compareInstances()" style="align-self: flex-end;">Compare</button>
-            </div>
-
-            <div id="comparisonResults" style="display: none;">
-                <div class="comparison-grid">
-                    <div class="instance-viewer">
-                        <h3>Instance A</h3>
-                        <div class="instance-content" id="instanceAContent"></div>
-                    </div>
-                    <div class="instance-viewer">
-                        <h3>Instance B</h3>
-                        <div class="instance-content" id="instanceBContent"></div>
-                    </div>
-                </div>
-
-                <div class="results-panel">
-                    <h3 style="color: #00ff88; margin-bottom: 1.5rem;">Analysis Results</h3>
-                    <div class="comparison-controls">
-                        <button onclick="performComparison()" class="enhanced-btn">🔍 Basic Comparison</button>
-                        <button onclick="performAdvancedComparison()" class="enhanced-btn">🤖 AI Analysis</button>
-                    </div>
-                    <div id="comparisonResults">
-                        <div class="match-metrics">
-                            <div class="metric-card">
-                                <div class="metric-label">Character Match</div>
-                                <div class="metric-value" id="charMatch">-</div>
-                            </div>
-                            <div class="metric-card">
-                                <div class="metric-label">Word Match</div>
-                                <div class="metric-value" id="wordMatch">-</div>
-                            </div>
-                            <div class="metric-card">
-                                <div class="metric-label">Structure Match</div>
-                                <div class="metric-value" id="structureMatch">-</div>
-                            </div>
-                            <div class="metric-card">
-                                <div class="metric-label">Core Similarity</div>
-                                <div class="metric-value" id="coreSimilarity">-</div>
-                            </div>
+                <div id="comparisonResults">
+                    <div class="match-metrics">
+                        <div class="metric-card">
+                            <div class="metric-label">Character Match</div>
+                            <div class="metric-value" id="charMatch">-</div>
                         </div>
-
-                        <div class="consensus-viewer">
-                            <h3>Consensus View (Common Elements)</h3>
-                            <div class="consensus-text" id="consensusText"></div>
+                        <div class="metric-card">
+                            <div class="metric-label">Word Match</div>
+                            <div class="metric-value" id="wordMatch">-</div>
                         </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Structure Match</div>
+                            <div class="metric-value" id="structureMatch">-</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Core Similarity</div>
+                            <div class="metric-value" id="coreSimilarity">-</div>
+                        </div>
+                    </div>
+
+                    <div class="consensus-viewer">
+                        <h3>Consensus View (Common Elements)</h3>
+                        <div class="consensus-text" id="consensusText"></div>
                     </div>
                 </div>
             </div>

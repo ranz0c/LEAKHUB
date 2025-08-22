@@ -1298,7 +1298,6 @@ function updateUserStats(username, action, data = {}) {
 // Chat System Functions
 let chatMessages = [];
 let onlineUsers = new Set();
-let currentUser = null;
 
 function toggleChat() {
     const chatPanel = document.getElementById('chatPanel');
@@ -1389,4 +1388,357 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+});
+
+// Production-Ready Features
+let userPreferences = JSON.parse(localStorage.getItem('userPreferences') || '{}');
+
+// Initialize production features
+function initializeProductionFeatures() {
+    updateUserInterface();
+    setupNavigation();
+    loadUserPreferences();
+    updateActiveUsers();
+    
+    // Auto-save every 30 seconds
+    setInterval(autoSave, 30000);
+    
+    // Update stats every 10 seconds
+    setInterval(updateRealTimeStats, 10000);
+}
+
+function updateUserInterface() {
+    document.getElementById('currentUserName').textContent = currentUser;
+    document.getElementById('profileName').textContent = currentUser;
+    document.getElementById('userNameInput').value = currentUser;
+    
+    // Update active users count
+    const uniqueUsers = new Set(leakDatabase.map(sub => sub.source));
+    document.getElementById('activeUsers').textContent = uniqueUsers.size;
+}
+
+function setupNavigation() {
+    // Handle navigation links
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = e.target.getAttribute('href').substring(1);
+            scrollToSection(target);
+            
+            // Update active state
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            e.target.classList.add('active');
+        });
+    });
+}
+
+function scrollToSection(sectionId) {
+    const sections = {
+        'submit': document.querySelector('.submission-form'),
+        'library': document.querySelector('.submissions-list'),
+        'compare': document.querySelector('.comparison-section'),
+        'community': document.querySelector('.leaderboard-overlay'),
+        'analytics': document.querySelector('.analytics-overlay')
+    };
+    
+    if (sections[sectionId]) {
+        sections[sectionId].scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+// User Profile Functions
+function toggleUserProfile() {
+    const overlay = document.getElementById('userProfileOverlay');
+    if (overlay.style.display === 'none') {
+        loadUserProfile();
+        overlay.style.display = 'flex';
+    } else {
+        overlay.style.display = 'none';
+    }
+}
+
+function loadUserProfile() {
+    const stats = userStats[currentUser] || {};
+    const userAchievements = displayAchievements(currentUser);
+    
+    // Update profile stats
+    document.getElementById('profileStats').innerHTML = `
+        <div class="stat-card">
+            <div class="stat-number">${stats.submissions || 0}</div>
+            <div class="stat-label">Submissions</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">${stats.firstDiscoveries || 0}</div>
+            <div class="stat-label">First Discoveries</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">${stats.verifiedLeaks || 0}</div>
+            <div class="stat-label">Verified Leaks</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">${stats.totalScore || 0}</div>
+            <div class="stat-label">Total Score</div>
+        </div>
+    `;
+    
+    // Update achievements
+    document.getElementById('profileAchievements').innerHTML = userAchievements.length > 0 
+        ? userAchievements.map(achievement => `
+            <div class="achievement-badge">
+                <div class="achievement-icon">${achievement.icon}</div>
+                <div class="achievement-name">${achievement.name}</div>
+            </div>
+        `).join('')
+        : '<p style="color: #666; text-align: center;">No achievements yet. Start submitting to earn badges!</p>';
+}
+
+// Settings Functions
+function toggleSettings() {
+    const overlay = document.getElementById('settingsOverlay');
+    if (overlay.style.display === 'none') {
+        overlay.style.display = 'flex';
+    } else {
+        overlay.style.display = 'none';
+    }
+}
+
+function loadUserPreferences() {
+    document.getElementById('userNameInput').value = currentUser;
+    document.getElementById('notificationsEnabled').checked = userPreferences.notifications !== false;
+    document.getElementById('autoSaveEnabled').checked = userPreferences.autoSave !== false;
+}
+
+function saveUserPreferences() {
+    currentUser = document.getElementById('userNameInput').value || 'Guest';
+    userPreferences.notifications = document.getElementById('notificationsEnabled').checked;
+    userPreferences.autoSave = document.getElementById('autoSaveEnabled').checked;
+    
+    localStorage.setItem('currentUser', currentUser);
+    localStorage.setItem('userPreferences', JSON.stringify(userPreferences));
+    
+    updateUserInterface();
+    showAlert('Settings saved successfully!');
+}
+
+// Analytics Functions
+function toggleAnalytics() {
+    const overlay = document.getElementById('analyticsOverlay');
+    if (overlay.style.display === 'none') {
+        loadAnalytics();
+        overlay.style.display = 'flex';
+    } else {
+        overlay.style.display = 'none';
+    }
+}
+
+function loadAnalytics() {
+    loadPlatformStats();
+    loadTargetDistribution();
+    loadGrowthTrends();
+    loadTopContributors();
+}
+
+function loadPlatformStats() {
+    const totalSubmissions = leakDatabase.length;
+    const verifiedCount = leakDatabase.filter(sub => sub.confidence >= 95).length;
+    const uniqueUsers = new Set(leakDatabase.map(sub => sub.source)).size;
+    const avgConfidence = leakDatabase.length > 0 
+        ? Math.round(leakDatabase.reduce((sum, sub) => sum + sub.confidence, 0) / leakDatabase.length)
+        : 0;
+    
+    document.getElementById('platformStats').innerHTML = `
+        <div class="analytics-stat">
+            <div class="stat-number">${totalSubmissions}</div>
+            <div class="stat-label">Total Submissions</div>
+        </div>
+        <div class="analytics-stat">
+            <div class="stat-number">${verifiedCount}</div>
+            <div class="stat-label">Verified Prompts</div>
+        </div>
+        <div class="analytics-stat">
+            <div class="stat-number">${uniqueUsers}</div>
+            <div class="stat-label">Active Users</div>
+        </div>
+        <div class="analytics-stat">
+            <div class="stat-number">${avgConfidence}%</div>
+            <div class="stat-label">Avg Confidence</div>
+        </div>
+    `;
+}
+
+function loadTargetDistribution() {
+    const distribution = {};
+    leakDatabase.forEach(sub => {
+        distribution[sub.targetType] = (distribution[sub.targetType] || 0) + 1;
+    });
+    
+    const chartData = Object.entries(distribution).map(([type, count]) => `
+        <div class="chart-bar">
+            <div class="bar-label">${type}</div>
+            <div class="bar-container">
+                <div class="bar-fill" style="width: ${(count / leakDatabase.length) * 100}%"></div>
+            </div>
+            <div class="bar-value">${count}</div>
+        </div>
+    `).join('');
+    
+    document.getElementById('targetChart').innerHTML = chartData;
+}
+
+function loadGrowthTrends() {
+    const last7Days = Array.from({length: 7}, (_, i) => {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        return date.toISOString().split('T')[0];
+    }).reverse();
+    
+    const dailySubmissions = last7Days.map(date => 
+        leakDatabase.filter(sub => sub.timestamp.startsWith(date)).length
+    );
+    
+    const trendData = last7Days.map((date, i) => `
+        <div class="trend-item">
+            <div class="trend-date">${new Date(date).toLocaleDateString()}</div>
+            <div class="trend-value">${dailySubmissions[i]}</div>
+        </div>
+    `).join('');
+    
+    document.getElementById('growthTrends').innerHTML = trendData;
+}
+
+function loadTopContributors() {
+    const topUsers = Object.entries(userStats)
+        .sort((a, b) => b[1].totalScore - a[1].totalScore)
+        .slice(0, 5);
+    
+    const contributorsData = topUsers.map((user, index) => `
+        <div class="contributor-item">
+            <div class="contributor-rank">#${index + 1}</div>
+            <div class="contributor-name">${user[0]}</div>
+            <div class="contributor-score">${user[1].totalScore} pts</div>
+        </div>
+    `).join('');
+    
+    document.getElementById('topContributors').innerHTML = contributorsData;
+}
+
+// Data Management Functions
+function exportData() {
+    const data = {
+        leakDatabase,
+        userStats,
+        leakRequests,
+        userVotes,
+        dailyChallenge,
+        userAchievements,
+        userPreferences,
+        exportDate: new Date().toISOString()
+    };
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `leakhub-backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    showAlert('Data exported successfully!');
+}
+
+function importData() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (confirm('This will replace all current data. Are you sure?')) {
+                        leakDatabase = data.leakDatabase || [];
+                        userStats = data.userStats || {};
+                        leakRequests = data.leakRequests || [];
+                        userVotes = data.userVotes || {};
+                        dailyChallenge = data.dailyChallenge || null;
+                        userAchievements = data.userAchievements || {};
+                        userPreferences = data.userPreferences || {};
+                        
+                        saveDatabase().then(() => {
+                            updateUI();
+                            showAlert('Data imported successfully!');
+                        });
+                    }
+                } catch (error) {
+                    showAlert('Error importing data. Please check the file format.');
+                }
+            };
+            reader.readAsText(file);
+        }
+    };
+    input.click();
+}
+
+function clearAllData() {
+    if (confirm('This will permanently delete all data. Are you absolutely sure?')) {
+        leakDatabase = [];
+        userStats = {};
+        leakRequests = [];
+        userVotes = {};
+        dailyChallenge = null;
+        userAchievements = {};
+        
+        localStorage.clear();
+        updateUI();
+        showAlert('All data cleared successfully!');
+    }
+}
+
+// Utility Functions
+function autoSave() {
+    if (userPreferences.autoSave !== false) {
+        saveDatabase();
+        console.log('Auto-saved at', new Date().toLocaleTimeString());
+    }
+}
+
+function updateRealTimeStats() {
+    updateActiveUsers();
+    updateUI();
+}
+
+function updateActiveUsers() {
+    const uniqueUsers = new Set(leakDatabase.map(sub => sub.source));
+    document.getElementById('activeUsers').textContent = uniqueUsers.size;
+}
+
+// Enhanced notification system
+function showNotification(title, message, type = 'info') {
+    if (userPreferences.notifications !== false) {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.innerHTML = `
+            <div class="notification-header">
+                <h4>${title}</h4>
+                <button onclick="this.parentElement.parentElement.remove()">×</button>
+            </div>
+            <p>${message}</p>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            if (notification.parentElement) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+}
+
+// Initialize production features when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    initializeProductionFeatures();
 });

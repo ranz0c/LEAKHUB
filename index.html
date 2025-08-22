@@ -9,54 +9,184 @@
 <body>
     <div class="floating-grid"></div>
     
-    <div class="container">
-        <header>
-            <h1>LeakHub</h1>
-            <p class="subtitle">The community hub for crowd-sourced system prompt leak verification. CL4R1T4S!</p>
-            <div class="status-bar">
-                <div class="status-item">
-                    <span>Active Targets:</span>
-                    <span class="status-value" id="activeLeaks">0</span>
-                </div>
-                <div class="status-item">
-                    <span>Total Submissions:</span>
-                    <span class="status-value" id="totalSubmissions">0</span>
-                </div>
-                <div class="status-item">
-                    <span>Verified Prompts:</span>
-                    <span class="status-value" id="verifiedPrompts">0</span>
-                </div>
-            </div>
-            <div style="text-align: center; margin-top: 1rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                <button onclick="toggleLeaderboard()" style="background: linear-gradient(135deg, #ff00ff, #00ff88); padding: 0.6rem 2rem;">
-                    🏆 View Leaderboard
-                </button>
-                <button onclick="toggleRequests()" style="background: linear-gradient(135deg, #ff6b6b, #ffd700); padding: 0.6rem 2rem;">
-                    🎯 Requests & Challenges
-                </button>
-                <button onclick="toggleChat()" style="background: linear-gradient(135deg, #00ffff, #ff00ff); padding: 0.6rem 2rem;">
-                    💬 Live Chat
-                </button>
+    <!-- Production Header -->
+    <nav class="production-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1 class="logo">LeakHub</h1>
+                <span class="version">v2.0.0</span>
             </div>
             
-            <!-- Real-time Chat System -->
-            <div id="chatPanel" class="chat-panel" style="display: none;">
-                <div class="chat-header">
-                    <h3>💬 LeakHub Live Chat</h3>
-                    <button onclick="toggleChat()" class="close-btn">×</button>
+            <div class="nav-menu">
+                <a href="#submit" class="nav-link active">Submit</a>
+                <a href="#library" class="nav-link">Library</a>
+                <a href="#compare" class="nav-link">Compare</a>
+                <a href="#community" class="nav-link">Community</a>
+                <a href="#analytics" class="nav-link">Analytics</a>
+            </div>
+            
+            <div class="nav-actions">
+                <button class="user-profile-btn" onclick="toggleUserProfile()">
+                    <span class="user-avatar">👤</span>
+                    <span class="user-name" id="currentUserName">Guest</span>
+                </button>
+                <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <header>
+            <div class="hero-section">
+                <h1>LeakHub</h1>
+                <p class="subtitle">The community hub for crowd-sourced system prompt leak verification. CL4R1T4S!</p>
+                
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-icon">🎯</div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="activeLeaks">0</div>
+                            <div class="stat-label">Active Targets</div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="totalSubmissions">0</div>
+                            <div class="stat-label">Total Submissions</div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="verifiedPrompts">0</div>
+                            <div class="stat-label">Verified Prompts</div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="activeUsers">0</div>
+                            <div class="stat-label">Active Users</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="chat-messages" id="chatMessages">
-                    <div class="system-message">Welcome to LeakHub Live Chat! Share discoveries, ask questions, and collaborate in real-time! 🚀</div>
-                </div>
-                <div class="chat-input-container">
-                    <input type="text" id="chatInput" placeholder="Type your message..." maxlength="500">
-                    <button onclick="sendChatMessage()" class="send-btn">Send</button>
-                </div>
-                <div class="chat-users" id="chatUsers">
-                    <div class="online-indicator">🟢 Online: <span id="onlineCount">1</span></div>
+                
+                <div class="quick-actions">
+                    <button onclick="toggleLeaderboard()" class="action-btn primary">
+                        🏆 Leaderboard
+                    </button>
+                    <button onclick="toggleRequests()" class="action-btn secondary">
+                        🎯 Challenges
+                    </button>
+                    <button onclick="toggleChat()" class="action-btn tertiary">
+                        💬 Live Chat
+                    </button>
+                    <button onclick="toggleAnalytics()" class="action-btn quaternary">
+                        📈 Analytics
+                    </button>
                 </div>
             </div>
         </header>
+
+        <!-- Real-time Chat System -->
+        <div id="chatPanel" class="chat-panel" style="display: none;">
+            <div class="chat-header">
+                <h3>💬 LeakHub Live Chat</h3>
+                <button onclick="toggleChat()" class="close-btn">×</button>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="system-message">Welcome to LeakHub Live Chat! Share discoveries, ask questions, and collaborate in real-time! 🚀</div>
+            </div>
+            <div class="chat-input-container">
+                <input type="text" id="chatInput" placeholder="Type your message..." maxlength="500">
+                <button onclick="sendChatMessage()" class="send-btn">Send</button>
+            </div>
+            <div class="chat-users" id="chatUsers">
+                <div class="online-indicator">🟢 Online: <span id="onlineCount">1</span></div>
+            </div>
+        </div>
+
+        <!-- User Profile Overlay -->
+        <div id="userProfileOverlay" class="overlay" style="display: none;">
+            <div class="overlay-content">
+                <div class="close-button" onclick="toggleUserProfile()">✕</div>
+                <div class="profile-header">
+                    <h2>👤 User Profile</h2>
+                    <div class="profile-avatar" id="profileAvatar">👤</div>
+                    <div class="profile-name" id="profileName">Guest User</div>
+                </div>
+                <div class="profile-stats" id="profileStats">
+                    <!-- Stats will be populated by JavaScript -->
+                </div>
+                <div class="profile-achievements" id="profileAchievements">
+                    <!-- Achievements will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Overlay -->
+        <div id="settingsOverlay" class="overlay" style="display: none;">
+            <div class="overlay-content">
+                <div class="close-button" onclick="toggleSettings()">✕</div>
+                <h2>⚙️ Settings</h2>
+                <div class="settings-section">
+                    <h3>User Preferences</h3>
+                    <label>
+                        <input type="text" id="userNameInput" placeholder="Enter your username">
+                        Username
+                    </label>
+                    <label>
+                        <input type="checkbox" id="notificationsEnabled" checked>
+                        Enable Notifications
+                    </label>
+                    <label>
+                        <input type="checkbox" id="autoSaveEnabled" checked>
+                        Auto-save Data
+                    </label>
+                </div>
+                <div class="settings-section">
+                    <h3>Data Management</h3>
+                    <button onclick="exportData()" class="settings-btn">📤 Export Data</button>
+                    <button onclick="importData()" class="settings-btn">📥 Import Data</button>
+                    <button onclick="clearAllData()" class="settings-btn danger">🗑️ Clear All Data</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Overlay -->
+        <div id="analyticsOverlay" class="overlay" style="display: none;">
+            <div class="overlay-content wide">
+                <div class="close-button" onclick="toggleAnalytics()">✕</div>
+                <h2>📈 LeakHub Analytics</h2>
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h3>📊 Platform Statistics</h3>
+                        <div class="analytics-stats" id="platformStats">
+                            <!-- Platform stats -->
+                        </div>
+                    </div>
+                    <div class="analytics-card">
+                        <h3>🎯 Target Distribution</h3>
+                        <div class="analytics-chart" id="targetChart">
+                            <!-- Target distribution chart -->
+                        </div>
+                    </div>
+                    <div class="analytics-card">
+                        <h3>📈 Growth Trends</h3>
+                        <div class="analytics-trends" id="growthTrends">
+                            <!-- Growth trends -->
+                        </div>
+                    </div>
+                    <div class="analytics-card">
+                        <h3>🏆 Top Contributors</h3>
+                        <div class="analytics-leaders" id="topContributors">
+                            <!-- Top contributors -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="main-section">
             <div class="panel">

@@ -1786,3 +1786,281 @@ function showNotification(title, message, type = 'info') {
 }
 
 // Production features are now initialized in initializeApp()
+
+// Tab System Functions
+function initializeTabSystem() {
+    // Set default active tab
+    switchTab('leaks');
+}
+
+function switchTab(tabName) {
+    // Hide all tab panels
+    const tabPanels = document.querySelectorAll('.tab-panel');
+    tabPanels.forEach(panel => {
+        panel.classList.remove('active');
+    });
+    
+    // Remove active class from all nav links
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+    });
+    
+    // Show selected tab panel
+    const selectedPanel = document.getElementById(`${tabName}-tab`);
+    if (selectedPanel) {
+        selectedPanel.classList.add('active');
+    }
+    
+    // Add active class to selected nav link
+    const selectedLink = document.querySelector(`[onclick="switchTab('${tabName}')"]`);
+    if (selectedLink) {
+        selectedLink.classList.add('active');
+    }
+    
+    // Update UI for the selected tab
+    updateTabUI(tabName);
+}
+
+function updateTabUI(tabName) {
+    switch(tabName) {
+        case 'leaks':
+            updateSubmissionsList();
+            break;
+        case 'validator':
+            updateValidationRequests();
+            break;
+        case 'library':
+            updateSubmissionsList();
+            break;
+        case 'compare':
+            updateComparisonDropdowns();
+            break;
+        case 'community':
+            // Community features are handled by existing functions
+            break;
+        case 'analytics':
+            // Analytics are handled by existing functions
+            break;
+    }
+}
+
+function updateComparisonDropdowns() {
+    const submission1Select = document.getElementById('submission1');
+    const submission2Select = document.getElementById('submission2');
+    const instanceASelect = document.getElementById('instanceA');
+    const instanceBSelect = document.getElementById('instanceB');
+    
+    if (submission1Select && submission2Select) {
+        updateComparisonSelect(submission1Select);
+        updateComparisonSelect(submission2Select);
+    }
+    
+    if (instanceASelect && instanceBSelect) {
+        updateComparisonSelect(instanceASelect);
+        updateComparisonSelect(instanceBSelect);
+    }
+}
+
+function updateComparisonSelect(selectElement) {
+    const currentValue = selectElement.value;
+    selectElement.innerHTML = '<option value="">Select submission...</option>';
+    
+    leakDatabase.forEach((submission, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = `${submission.instance} (${submission.targetType})`;
+        selectElement.appendChild(option);
+    });
+    
+    if (currentValue) {
+        selectElement.value = currentValue;
+    }
+}
+
+// Validation System Functions
+function submitValidation(event) {
+    event.preventDefault();
+    
+    const source = document.getElementById('validatorSourceName').value;
+    const validation = {
+        id: Date.now().toString(),
+        source: source,
+        category: document.getElementById('validationCategory').value,
+        title: document.getElementById('validationTitle').value,
+        url: document.getElementById('validationUrl').value || null,
+        content: document.getElementById('validationContent').value,
+        context: document.getElementById('validationContext').value,
+        relatedComponents: document.getElementById('relatedComponents').value || null,
+        timestamp: new Date().toISOString(),
+        votes: 0,
+        validations: 0,
+        confidence: 0,
+        status: 'pending', // pending, validated, rejected
+        validators: [],
+        comments: []
+    };
+    
+    // Calculate initial confidence
+    validation.confidence = calculateValidationConfidence(validation.content);
+    
+    // Add to validation requests (we'll use leakRequests for now, but could create separate storage)
+    if (!window.validationRequests) {
+        window.validationRequests = [];
+    }
+    window.validationRequests.push(validation);
+    
+    // Update user stats
+    if (!userStats[source]) {
+        userStats[source] = {
+            submissions: 0,
+            verifiedLeaks: 0,
+            firstDiscoveries: 0,
+            totalScore: 0,
+            joinDate: new Date().toISOString(),
+            toolsDiscovered: 0,
+            appsDiscovered: 0,
+            agentsDiscovered: 0,
+            comparisons: 0,
+            challengesCompleted: 0,
+            requestsSubmitted: 0,
+            validationsSubmitted: 0
+        };
+    }
+    
+    userStats[source].validationsSubmitted = (userStats[source].validationsSubmitted || 0) + 1;
+    
+    // Save to database
+    saveDatabase().then(() => {
+        updateValidationRequests();
+        showAlert('Validation request submitted successfully!');
+        
+        // Clear form
+        event.target.reset();
+    });
+}
+
+function calculateValidationConfidence(content) {
+    // Simple confidence calculation based on content length and structure
+    let confidence = 50; // Base confidence
+    
+    if (content.length > 100) confidence += 10;
+    if (content.length > 500) confidence += 10;
+    if (content.includes('http')) confidence += 5;
+    if (content.includes('function') || content.includes('class')) confidence += 10;
+    if (content.includes('import') || content.includes('require')) confidence += 5;
+    
+    return Math.min(confidence, 100);
+}
+
+function updateValidationRequests() {
+    const container = document.getElementById('validationRequests');
+    if (!container || !window.validationRequests) return;
+    
+    if (window.validationRequests.length === 0) {
+        container.innerHTML = '<p style="color: #666; text-align: center;">No validation requests yet. Be the first to submit!</p>';
+        return;
+    }
+    
+    const requestsHTML = window.validationRequests.map(request => `
+        <div class="validation-request-item" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+            <div class="validation-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <h4 style="color: #00ff88; margin: 0;">${request.title}</h4>
+                <span class="validation-status ${request.status}" style="padding: 0.2rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold; background: ${getStatusColor(request.status)}; color: #000;">${request.status.toUpperCase()}</span>
+            </div>
+            <div class="validation-meta" style="color: #888; font-size: 0.9rem; margin-bottom: 0.5rem;">
+                <span>Category: ${request.category}</span> • 
+                <span>Submitted by: ${request.source}</span> • 
+                <span>Confidence: ${request.confidence}%</span>
+            </div>
+            <div class="validation-content" style="background: rgba(0,0,0,0.5); padding: 0.5rem; border-radius: 4px; margin-bottom: 0.5rem; font-family: monospace; font-size: 0.9rem; max-height: 100px; overflow-y: auto;">
+                ${request.content.substring(0, 200)}${request.content.length > 200 ? '...' : ''}
+            </div>
+            <div class="validation-actions" style="display: flex; gap: 0.5rem;">
+                <button onclick="validateRequest('${request.id}', 'validated')" class="enhanced-btn" style="background: rgba(0, 255, 136, 0.2); border-color: #00ff88; color: #00ff88;">✅ Validate</button>
+                <button onclick="validateRequest('${request.id}', 'rejected')" class="enhanced-btn" style="background: rgba(255, 0, 0, 0.2); border-color: #ff4444; color: #ff4444;">❌ Reject</button>
+                <button onclick="viewValidationDetails('${request.id}')" class="enhanced-btn">🔍 Details</button>
+            </div>
+        </div>
+    `).join('');
+    
+    container.innerHTML = requestsHTML;
+}
+
+function getStatusColor(status) {
+    switch(status) {
+        case 'pending': return 'rgba(255, 255, 0, 0.3)';
+        case 'validated': return 'rgba(0, 255, 136, 0.3)';
+        case 'rejected': return 'rgba(255, 0, 0, 0.3)';
+        default: return 'rgba(128, 128, 128, 0.3)';
+    }
+}
+
+function validateRequest(requestId, action) {
+    const request = window.validationRequests.find(r => r.id === requestId);
+    if (!request) return;
+    
+    request.status = action;
+    request.validations++;
+    
+    // Update user stats for the validator
+    const currentUser = localStorage.getItem('currentUser') || 'Anonymous';
+    if (!userStats[currentUser]) {
+        userStats[currentUser] = {
+            submissions: 0,
+            verifiedLeaks: 0,
+            firstDiscoveries: 0,
+            totalScore: 0,
+            joinDate: new Date().toISOString(),
+            toolsDiscovered: 0,
+            appsDiscovered: 0,
+            agentsDiscovered: 0,
+            comparisons: 0,
+            challengesCompleted: 0,
+            requestsSubmitted: 0,
+            validationsSubmitted: 0,
+            validationsPerformed: 0
+        };
+    }
+    
+    userStats[currentUser].validationsPerformed = (userStats[currentUser].validationsPerformed || 0) + 1;
+    
+    saveDatabase().then(() => {
+        updateValidationRequests();
+        showAlert(`Request ${action} successfully!`);
+    });
+}
+
+function viewValidationDetails(requestId) {
+    const request = window.validationRequests.find(r => r.id === requestId);
+    if (!request) return;
+    
+    const details = `
+Title: ${request.title}
+Category: ${request.category}
+Submitted by: ${request.source}
+Status: ${request.status}
+Confidence: ${request.confidence}%
+Timestamp: ${new Date(request.timestamp).toLocaleString()}
+
+Content:
+${request.content}
+
+Context: ${request.context || 'None provided'}
+
+Related Components: ${request.relatedComponents || 'None provided'}
+    `;
+    
+    alert(details);
+}
+
+function toggleRelatedComponents() {
+    const checkbox = document.getElementById('hasRelatedComponents');
+    const section = document.getElementById('relatedComponentsSection');
+    
+    if (checkbox.checked) {
+        section.style.display = 'block';
+    } else {
+        section.style.display = 'none';
+    }
+}

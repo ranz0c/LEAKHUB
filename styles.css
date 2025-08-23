@@ -2108,3 +2108,89 @@ button.secondary:hover {
         font-size: 1.2rem;
     }
 }
+
+/* Tab System */
+.tab-content {
+    width: 100%;
+}
+
+.tab-panel {
+    display: none;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.tab-panel.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.nav-link {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.nav-link.active {
+    color: #00ff88 !important;
+    background: rgba(0, 255, 136, 0.1);
+    border-radius: 8px;
+}
+
+.nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #00ff88, #00aaff);
+    border-radius: 1px;
+}
+
+/* Community Grid */
+.community-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.community-card {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.community-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 255, 136, 0.2);
+    border-color: rgba(0, 255, 136, 0.3);
+}
+
+.community-card h3 {
+    color: #00ff88;
+    margin-bottom: 0.5rem;
+}
+
+.community-card p {
+    color: #888;
+    margin-bottom: 1rem;
+}
+
+/* Analytics Overview */
+.analytics-overview {
+    text-align: center;
+    padding: 2rem;
+}
+
+.analytics-overview p {
+    color: #888;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+}

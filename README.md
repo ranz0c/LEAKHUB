@@ -1,53 +1,81 @@
-# 🚀 LeakHub - AI System Prompt Discovery Platform
+# InfoValidator 🔍✨
 
-**The community hub for crowd-sourced system prompt leak verification. CL4R1T4S!**
+**The Universal Platform for Crowd-Sourced Information Verification**
 
-## 🌟 What is LeakHub?
+A community-driven web platform where multiple humans can submit information claims, and we use both human consensus AND AI validation to verify accuracy. From AI system prompts to code algorithms, from data facts to documents - if it can be verified, it belongs here!
 
-LeakHub is a revolutionary web platform that enables the community to discover, submit, verify, and analyze AI system prompt leaks. It's designed to promote transparency in AI systems through crowdsourced verification and community-driven discovery.
+## 🌟 What is InfoValidator?
 
-## ✨ Features
+InfoValidator is a revolutionary platform that combines **human intelligence** with **AI analysis** to create a robust system for verifying all types of information:
 
-### 🔍 **Core Functionality**
-- **Submit Leaks**: Submit suspected AI system prompt leaks with detailed metadata
-- **Compare & Verify**: Advanced comparison algorithms to verify authenticity
-- **Community Library**: Browse and search through all submitted leaks
-- **Confidence Scoring**: Automatic confidence assessment based on content analysis
+- **🤖 AI System Prompts** - Verify system prompts from ChatGPT, Claude, Gemini, and more
+- **💻 Code & Algorithms** - Validate code snippets, algorithms, and technical implementations
+- **📊 Data & Facts** - Verify statistics, numbers, and factual information
+- **📄 Documents & Text** - Validate official documents, quotes, and textual content
+- **🖼️ Images & Visuals** - Verify visual information and media content
+- **🎵 Audio & Video** - Validate audio/video content and transcriptions
+- **🔌 APIs & Endpoints** - Verify API documentation and technical specifications
+- **🛠️ Custom Claims** - Any other type of information that needs verification
 
-### 🎯 **Target Types Supported**
-- 🤖 **AI Models** (GPT-4, Claude, Gemini, etc.)
-- 📱 **Apps/Interfaces** (Cursor, GitHub Copilot, etc.)
-- 🔧 **Tools/Functions** (Code Interpreter, WebPilot, etc.)
-- 🤝 **AI Agents** (AutoGPT, BabyAGI, etc.)
-- 🔌 **Plugins/Extensions** (Browser extensions, IDE plugins, etc.)
-- 🛠️ **Custom GPTs/Bots** (Custom implementations)
+## 🚀 Key Features
 
-### 🏆 **Gamification & Community**
-- **Leaderboard**: Track top contributors and achievements
-- **Daily Challenges**: Compete in daily leak hunting challenges
-- **Achievement System**: Unlock badges for notable contributions
-- **Points System**: Earn points for submissions, verifications, and discoveries
+### 🔍 **Multi-Modal Validation**
+- **Human Consensus**: Multiple validators can submit the same information
+- **AI Analysis**: Advanced similarity detection and pattern recognition
+- **Hybrid Verification**: Combines human judgment with AI insights
 
-### 🎯 **Requests & Bounties**
-- **Community Requests**: Request specific targets for leak hunting
-- **Voting System**: Vote on which targets to prioritize
-- **Bounty System**: Offer points for high-priority discoveries
-- **Trending Requests**: See what the community wants most
+### 🏆 **Gamified Community**
+- **Leaderboard System**: Track top validators and their contributions
+- **Achievement System**: Unlock badges for different types of validations
+- **Points & Rewards**: Earn points for submissions, verifications, and discoveries
+- **Daily Challenges**: Compete in themed validation challenges
 
-### 📊 **Advanced Analytics**
-- **Similarity Metrics**: Character match, word match, structure match, core similarity
-- **Consensus View**: Identify common elements across multiple submissions
-- **Verification Tracking**: Track verification status and confidence levels
-- **Statistics Dashboard**: Real-time platform statistics
+### 🤖 **Advanced AI Analysis**
+- **Semantic Similarity**: Jaccard similarity for meaning-based comparison
+- **Structural Analysis**: Line count, formatting, and organization comparison
+- **Pattern Detection**: Sliding window algorithm for common phrase identification
+- **Keyword Overlap**: AI-related and domain-specific term analysis
+- **Confidence Scoring**: AI-powered confidence meters for verification
 
-## 🚀 Getting Started
+### 💬 **Real-Time Collaboration**
+- **Live Chat System**: Discuss validations and share insights
+- **Community Features**: Vote on requests, share verification methods
+- **Bounty System**: Request specific information validations with rewards
 
-### Prerequisites
-- **For Development**: Node.js 18+ and npm
-- **For Production**: Modern web browser (Chrome, Firefox, Safari, Edge)
-- **For Backend**: Optional - MongoDB, Supabase, or Firebase
+### 📊 **Comprehensive Analytics**
+- **Platform Statistics**: Track growth, engagement, and verification rates
+- **Category Distribution**: See what types of information are most validated
+- **Growth Trends**: Monitor platform adoption and usage patterns
+- **Top Contributors**: Recognize the most active and accurate validators
 
-### Quick Start (Development)
+## 🛠️ Technical Stack
+
+### **Frontend**
+- **HTML5** - Semantic markup and accessibility
+- **CSS3** - Modern styling with cyberpunk aesthetic
+- **JavaScript (ES6+)** - Interactive features and real-time updates
+- **Vite** - Fast development server and optimized builds
+
+### **Data Management**
+- **LocalStorage** - Client-side data persistence
+- **Database Abstraction** - Ready for backend integration (MongoDB, Supabase, Firebase)
+- **Export/Import** - Full data backup and restore functionality
+
+### **Deployment**
+- **GitHub Pages** - Free hosting with automated deployment
+- **Vercel/Netlify** - Serverless deployment options
+- **CI/CD** - Automated build and deployment pipeline
+
+## 🚀 Quick Start
+
+### **For Users**
+1. **Visit**: `https://elder-plinius.github.io/LEAKHUB/`
+2. **Load Demo Data**: Click the "🧪 Load Demo" button to see examples
+3. **Submit Claims**: Use the form to submit information for validation
+4. **Compare Claims**: Use the comparison tools to verify accuracy
+5. **Join Community**: Participate in challenges and discussions
+
+### **For Developers**
 ```bash
 # Clone the repository
 git clone https://github.com/elder-plinius/LEAKHUB.git
@@ -59,188 +87,166 @@ npm install
 # Start development server
 npm run dev
 
-# Open http://localhost:3000
-```
-
-### Quick Start (Production)
-1. **GitHub Pages**: Push to main branch - auto-deploys!
-2. **Vercel**: `npm i -g vercel && vercel`
-3. **Netlify**: `npm install -g netlify-cli && netlify deploy`
-
-### Local Testing
-```bash
 # Build for production
 npm run build
 
-# Preview production build
-npm run preview
-
-# Serve static files
-npm run serve
+# Deploy to GitHub Pages
+npm run deploy
 ```
 
-### Quick Start Guide
+## 📋 Information Categories
 
-#### 1. **Submit Your First Leak**
-1. Fill in your identifier (username)
-2. Select the target type (AI Model, App, Tool, etc.)
-3. Enter the target name and URL
-4. Paste the suspected system prompt
-5. Add context and access requirements
-6. Submit and earn points!
+### **🤖 AI System Prompts**
+- ChatGPT, Claude, Gemini, and other AI models
+- System instructions and behavioral guidelines
+- Tool-specific prompts and function calls
 
-#### 2. **Compare Submissions**
-1. Select two different submissions from the dropdowns
-2. Click "Compare" to analyze similarity
-3. Review the detailed metrics and consensus view
-4. High similarity automatically boosts confidence scores
+### **💻 Code & Algorithms**
+- Programming algorithms and implementations
+- Open source code snippets and functions
+- Technical specifications and APIs
 
-#### 3. **Join the Community**
-1. Click "View Leaderboard" to see top contributors
-2. Check out "Requests & Challenges" for daily missions
-3. Vote on community requests
-4. Track your achievements and progress
+### **📊 Data & Facts**
+- Statistics and numerical data
+- Factual information and research findings
+- Public records and official data
 
-## 🎮 How It Works
+### **📄 Documents & Text**
+- Official documents and legal texts
+- Quotes and attributed statements
+- Academic papers and research documents
 
-### **Submission Process**
-1. **Content Analysis**: Automatic confidence scoring based on prompt patterns
-2. **First Discovery Detection**: Identifies if this is the first submission for a target
-3. **Point Allocation**: Awards points for submissions, discoveries, and verifications
-4. **Metadata Tracking**: Stores access requirements, context, and tool information
+### **🖼️ Images & Visuals**
+- Screenshots and visual evidence
+- Charts, graphs, and data visualizations
+- Media content and digital assets
 
-### **Verification System**
-1. **Multi-Metric Comparison**: Uses character, word, structure, and core similarity
-2. **Consensus Building**: Identifies common elements across submissions
-3. **Confidence Boosting**: High similarity automatically increases confidence scores
-4. **Verification Milestones**: Tracks when leaks reach verified status
+### **🎵 Audio & Video**
+- Audio transcriptions and captions
+- Video content and streaming data
+- Media metadata and technical specifications
 
-### **Gamification Mechanics**
-- **Base Points**: 10 points per submission
-- **First Discovery**: 100 points + 50 bonus for non-model targets
-- **Tool Prompts**: 30 bonus points for comprehensive submissions
-- **Verification**: 20 points per verification + 50 bonus for reaching verified status
-- **Daily Challenges**: 400-700 points for completing daily missions
-
-## 🎨 Design Features
-
-### **Modern UI/UX**
-- **Cyberpunk Aesthetic**: Dark theme with neon accents and gradients
-- **Responsive Design**: Works perfectly on desktop, tablet, and mobile
-- **Smooth Animations**: Floating grid background and interactive elements
-- **Intuitive Navigation**: Clear sections and easy-to-use interface
-
-### **Visual Elements**
-- **Status Indicators**: Real-time statistics and progress tracking
-- **Badge System**: Visual indicators for access requirements and features
-- **Color Coding**: Different colors for different target types and confidence levels
-- **Interactive Elements**: Hover effects, transitions, and feedback
-
-## 🔧 Technical Details
-
-### **Frontend Technologies**
-- **HTML5**: Semantic markup and modern structure
-- **CSS3**: Advanced styling with animations and responsive design
-- **JavaScript (ES6+)**: Full application logic and data management
-- **Vite**: Fast build tool and development server
-- **LocalStorage**: Client-side data persistence with backend fallback
-
-### **Backend & Deployment**
-- **GitHub Actions**: Automated CI/CD pipeline
-- **Vercel/Netlify**: Serverless deployment with functions
-- **Database Abstraction**: Support for localStorage, MongoDB, Supabase, Firebase
-- **API Layer**: RESTful endpoints with CORS support
-
-### **Key Algorithms**
-- **Text Normalization**: Standardized text processing for comparison
-- **Similarity Metrics**: Multiple algorithms for comprehensive analysis
-- **Levenshtein Distance**: String similarity calculation
-- **Phrase Matching**: Sliding window approach for common phrase detection
-
-### **Data Management**
-- **Hybrid Storage**: localStorage with optional backend persistence
-- **JSON Serialization**: Efficient data storage and retrieval
-- **Real-time Updates**: Instant UI updates and statistics
-- **Data Validation**: Input validation and error handling
-- **Export/Import**: Full data backup and restore functionality
+### **🔌 APIs & Endpoints**
+- API documentation and specifications
+- Rate limits and authentication methods
+- Technical endpoints and data formats
 
 ## 🎯 Use Cases
 
 ### **For Researchers**
-- Document and verify AI system prompts
-- Compare different implementations
-- Track prompt evolution over time
-- Build comprehensive prompt databases
+- Verify AI system behaviors and capabilities
+- Validate technical documentation and specifications
+- Cross-reference information across multiple sources
 
 ### **For Developers**
-- Understand AI system behaviors
-- Debug prompt-related issues
-- Learn from existing implementations
-- Contribute to AI transparency
+- Verify code implementations and algorithms
+- Validate API documentation and endpoints
+- Check technical specifications and requirements
 
-### **For Community**
-- Participate in AI transparency efforts
-- Compete in daily challenges
-- Build reputation and achievements
-- Help verify and validate discoveries
+### **For Journalists**
+- Verify quotes and attributed statements
+- Validate data and statistics
+- Cross-check information from multiple sources
+
+### **For Students**
+- Verify academic information and research
+- Validate educational content and resources
+- Learn about information verification techniques
+
+### **For General Users**
+- Verify information before sharing
+- Learn about fact-checking and validation
+- Contribute to a community of truth-seekers
+
+## 🔒 Security & Privacy
+
+### **Data Protection**
+- **Client-Side Storage**: All data stored locally in your browser
+- **No Server Required**: Works completely offline
+- **Export Control**: Full control over your data with export/import
+
+### **Security Features**
+- **XSS Protection**: Input sanitization and safe rendering
+- **Security Headers**: Comprehensive HTTP security headers
+- **No Sensitive Data**: No API keys or secrets stored
+
+### **Privacy First**
+- **Anonymous Usage**: No account required to use basic features
+- **Local Processing**: All AI analysis happens in your browser
+- **Data Ownership**: You own and control all your data
+
+## 🌟 Why InfoValidator?
+
+### **The Problem**
+In today's digital age, information spreads faster than ever, but verification often lags behind. We need a system that can:
+- **Scale quickly** to handle massive amounts of information
+- **Adapt flexibly** to different types of content
+- **Combine human insight** with AI analysis
+- **Build community** around truth-seeking
+
+### **The Solution**
+InfoValidator provides:
+- **Universal Platform**: Handle any type of information that can be verified
+- **Hybrid Validation**: Human consensus + AI analysis = better accuracy
+- **Community-Driven**: Leverage collective intelligence
+- **Gamified Engagement**: Make verification fun and rewarding
+
+## 🚀 Future Roadmap
+
+### **Phase 1: Core Platform** ✅
+- [x] Universal information submission system
+- [x] AI-powered similarity analysis
+- [x] Community features and gamification
+- [x] GitHub Pages deployment
+
+### **Phase 2: Enhanced Features**
+- [ ] Backend integration (MongoDB/Supabase)
+- [ ] Real-time collaboration features
+- [ ] Advanced AI analysis (NLP, image recognition)
+- [ ] Mobile app development
+
+### **Phase 3: Advanced Capabilities**
+- [ ] Blockchain-based verification records
+- [ ] API for third-party integrations
+- [ ] Advanced analytics and insights
+- [ ] Enterprise features and white-labeling
 
 ## 🤝 Contributing
 
-### **How to Contribute**
-1. **Submit Leaks**: Share discovered system prompts
-2. **Verify Submissions**: Compare and verify existing leaks
-3. **Request Targets**: Suggest new targets for the community
-4. **Vote on Requests**: Help prioritize community goals
-5. **Report Issues**: Help improve the platform
+We welcome contributions from the community! Here's how you can help:
 
-### **Best Practices**
-- **Be Accurate**: Only submit genuine system prompts
-- **Provide Context**: Include how you obtained the prompt
-- **Add Metadata**: Include access requirements and URLs
-- **Verify Others**: Help verify community submissions
-- **Respect Privacy**: Don't submit private or sensitive information
+### **Report Issues**
+- Found a bug? Report it in the Issues section
+- Have a feature request? Let us know!
 
-## 🔮 Future Enhancements
+### **Submit Validations**
+- Submit information claims for verification
+- Help verify existing submissions
+- Participate in community discussions
 
-### **Planned Features**
-- **Advanced Analytics**: Machine learning-based similarity detection
-- **Mobile App**: Native mobile application
-- **Real-time Collaboration**: Live collaboration features
-- **Advanced Export**: Data export in various formats (CSV, JSON, API)
-- **User Authentication**: Secure user accounts and profiles
-- **Social Features**: Comments, discussions, and community forums
+### **Code Contributions**
+- Fork the repository
+- Create a feature branch
+- Submit a pull request
 
-### **Backend Integration**
-- **Database Support**: MongoDB, PostgreSQL, Firebase integration
-- **API Access**: RESTful API for programmatic access
-- **Real-time Updates**: WebSocket support for live updates
-- **Email Notifications**: Automated notifications and alerts
-- **Advanced Security**: JWT authentication and rate limiting
-
-### **Community Features**
-- **User Profiles**: Detailed user profiles and statistics
-- **Discussion Forums**: Community discussions and analysis
-- **Expert Verification**: Expert review system
-- **Bounty Marketplace**: Advanced bounty and reward system
-- **Achievement System**: Expanded badges and rewards
+### **Spread the Word**
+- Share InfoValidator with your network
+- Use it to verify information you encounter
+- Help build a community of truth-seekers
 
 ## 📄 License
 
-This project is open source and available under the MIT License. See the LICENSE file for details.
+This project is open source and available under the [MIT License](LICENSE).
 
 ## 🙏 Acknowledgments
 
-- **AI Research Community**: For inspiration and feedback
-- **Open Source Contributors**: For tools and libraries used
-- **Early Testers**: For valuable feedback and suggestions
-- **CL4R1T4S Community**: For the vision of AI transparency
-
-## 📞 Support
-
-- **Issues**: Report bugs and feature requests via GitHub issues
-- **Discussions**: Join community discussions
-- **Documentation**: Check the inline documentation and comments
+- **OpenAI** for inspiring the original concept
+- **GitHub** for providing free hosting and collaboration tools
+- **The Community** for contributing to information verification
+- **All Validators** who help make the internet a more truthful place
 
 ---
 
-**Ready to start hunting for AI system prompts? Open `index.html` and join the LeakHub community! 🚀**
+**🔍 Truth is a collaborative effort. Join us in building a more verified world! ✨**
+
+*InfoValidator - Where Humans + AI = Truth*
